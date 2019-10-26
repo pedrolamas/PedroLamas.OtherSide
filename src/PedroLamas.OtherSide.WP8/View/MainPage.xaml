@@ -1,0 +1,106 @@
+﻿<phone:PhoneApplicationPage x:Class="PedroLamas.OtherSide.View.MainPage"
+                            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                            xmlns:Helpers="clr-namespace:PedroLamas.OtherSide.Helpers"
+                            xmlns:cimbalinoBehaviors="clr-namespace:Cimbalino.Phone.Toolkit.Behaviors;assembly=Cimbalino.Phone.Toolkit"
+                            xmlns:cimbalinoConverters="clr-namespace:Cimbalino.Phone.Toolkit.Converters;assembly=Cimbalino.Phone.Toolkit"
+                            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                            xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+                            xmlns:inneractive="clr-namespace:Inneractive.Nokia.Ad;assembly=Inneractive.Ad"
+                            xmlns:localViewModel="clr-namespace:PedroLamas.OtherSide.ViewModel"
+                            xmlns:maps="clr-namespace:Microsoft.Phone.Maps.Controls;assembly=Microsoft.Phone.Maps"
+                            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                            xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+                            xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+                            xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+                            DataContext="{Binding Main,
+                                                  Source={StaticResource Locator}}"
+                            FontFamily="{StaticResource PhoneFontFamilyNormal}"
+                            FontSize="{StaticResource PhoneFontSizeNormal}"
+                            Foreground="{StaticResource PhoneForegroundBrush}"
+                            Orientation="Portrait"
+                            Style="{StaticResource PhoneApplicationPageStyle}"
+                            SupportedOrientations="Portrait"
+                            shell:SystemTray.IsVisible="True"
+                            mc:Ignorable="d">
+
+    <phone:PhoneApplicationPage.Resources>
+        <cimbalinoConverters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+
+        <DataTemplate x:Key="ListPickerFullModeItemTemplate">
+            <TextBlock Margin="0,18"
+                       FontSize="{StaticResource PhoneFontSizeLarge}"
+                       Text="{Binding}"
+                       Visibility="{Binding Converter={StaticResource StringToVisibilityConverter}}" />
+        </DataTemplate>
+    </phone:PhoneApplicationPage.Resources>
+
+    <i:Interaction.Behaviors>
+        <cimbalinoBehaviors:ApplicationBarBehavior>
+            <cimbalinoBehaviors:ApplicationBarIconButton Command="{Binding UseCurrentLocationCommand,
+                                                                           Mode=OneTime}"
+                                                         IconUri="/Assets/AppBar/centerme.png"
+                                                         Text="me" />
+            <cimbalinoBehaviors:ApplicationBarIconButton Click="ViewLocationApplicationBarItemBase_OnClick"
+                                                         IconUri="/Assets/AppBar/location.png"
+                                                         Text="location" />
+            <cimbalinoBehaviors:ApplicationBarIconButton Command="{Binding ShowLocationInfoCommand,
+                                                                           Mode=OneTime}"
+                                                         IconUri="/Assets/AppBar/questionmark.png"
+                                                         Text="info" />
+
+            <cimbalinoBehaviors:ApplicationBarBehavior.MenuItems>
+                <cimbalinoBehaviors:ApplicationBarMenuItem Click="ShowMapModesApplicationBarIconButton_OnClick" Text="map view" />
+                <cimbalinoBehaviors:ApplicationBarMenuItem Click="ShareApplicationBarIconButton_OnClick" Text="share" />
+                <cimbalinoBehaviors:ApplicationBarMenuItem Command="{Binding PinToStartCommand, Mode=OneTime}" Text="pin to start" />
+                <cimbalinoBehaviors:ApplicationBarMenuItem Command="{Binding ShowSettingsCommand, Mode=OneTime}" Text="settings" />
+                <cimbalinoBehaviors:ApplicationBarMenuItem Command="{Binding ShowAboutCommand, Mode=OneTime}" Text="about" />
+            </cimbalinoBehaviors:ApplicationBarBehavior.MenuItems>
+        </cimbalinoBehaviors:ApplicationBarBehavior>
+    </i:Interaction.Behaviors>
+
+    <Grid x:Name="LayoutRoot" Background="Transparent">
+        <Grid x:Name="ContentPanel">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <inneractive:InneractiveAd Width="480"
+                                       MaxHeight="80"
+                                       AdType="IaAdType_Banner"
+                                       AppID="PedroLamas_TheOtherSide_WP" />
+
+            <maps:Map x:Name="MainMap"
+                      Grid.Row="1"
+                      Loaded="MainMap_OnLoaded">
+                <i:Interaction.Behaviors>
+                    <localViewModel:MapBehavior Center="{Binding Center,
+                                                                 Mode=TwoWay}"
+                                                Position="{Binding Position,
+                                                                   Mode=TwoWay}"
+                                                ZoomLevel="{Binding ZoomLevel,
+                                                                    Mode=TwoWay}" />
+                </i:Interaction.Behaviors>
+            </maps:Map>
+            <toolkit:ListPicker x:Name="MapModeListPicker"
+                                ExpansionMode="FullScreenOnly"
+                                FullModeItemTemplate="{StaticResource ListPickerFullModeItemTemplate}"
+                                Header="MAP VIEW"
+                                SelectionChanged="MapModeListPicker_OnSelectionChanged"
+                                Visibility="Collapsed" />
+            <toolkit:ListPicker x:Name="ShareTypeListPicker"
+                                ExpansionMode="FullScreenOnly"
+                                FullModeItemTemplate="{StaticResource ListPickerFullModeItemTemplate}"
+                                Header="SHARE"
+                                SelectionChanged="ShareTypeListPicker_OnSelectionChanged"
+                                Visibility="Collapsed" />
+            <toolkit:ListPicker x:Name="LocationTypeListPicker"
+                                ExpansionMode="FullScreenOnly"
+                                FullModeItemTemplate="{StaticResource ListPickerFullModeItemTemplate}"
+                                Header="VIEW LOCATION"
+                                SelectionChanged="LocationTypeListPicker_OnSelectionChanged"
+                                Visibility="Collapsed" />
+        </Grid>
+    </Grid>
+</phone:PhoneApplicationPage>
